@@ -158,7 +158,92 @@ async function main() {
     }
   }
 
-  console.log(`Seeded 1 course, ${lessons.length} lessons, ${lessons.reduce((s, l) => s + l.blocks.length, 0)} content blocks.`)
+  // More courses
+  const otherCourses = [
+    {
+      title: "Thinking in Code",
+      slug: "thinking-in-code",
+      domain: "Computer Science",
+      difficulty: 1,
+      lessons: [
+        { title: "What is Code?", minutes: 8, blocks: [
+          { type: BlockType.TEXT_EXPLANATION, content: { prompt: "Code is a set of instructions that tell a computer what to do. Just like a recipe tells a chef how to bake a cake, code tells a computer how to solve problems.\n\nLet's start with the most important idea: **sequence** — doing things in order." } },
+          { type: BlockType.MULTIPLE_CHOICE, content: { prompt: "What do we call a set of instructions for a computer?", options: ["A recipe", "Code", "A message", "A drawing"] }, solution: { correctIndex: 1 } },
+          { type: BlockType.TEXT_EXPLANATION, content: { prompt: "Great! Now let's think about **decomposition** — breaking a big problem into smaller steps." } },
+        ]},
+        { title: "Sequences", minutes: 10, blocks: [
+          { type: BlockType.TEXT_EXPLANATION, content: { prompt: "A sequence is a list of steps that happen one after another. Computers follow sequences exactly as written.\n\nIf you wrote:\n1. Open jar\n2. Eat cookie\n\nThe computer would do exactly that — in order!" } },
+          { type: BlockType.MULTIPLE_CHOICE, content: { prompt: "What happens if you swap the two steps above?", options: ["Same result", "You'd eat a closed jar", "You'd eat a cookie then open the jar", "Nothing changes"] }, solution: { correctIndex: 2 } },
+        ]},
+        { title: "Patterns", minutes: 10, blocks: [
+          { type: BlockType.TEXT_EXPLANATION, content: { prompt: "Computers are great at spotting and repeating **patterns**. A loop is a way to repeat an action multiple times without writing it over and over." } },
+          { type: BlockType.MULTIPLE_CHOICE, content: { prompt: "What programming concept lets you repeat an action?", options: ["A variable", "A loop", "A function", "A comment"] }, solution: { correctIndex: 1 } },
+          { type: BlockType.FILL_IN_BLANK, content: { prompt: "If you say 'Hello' 3 times using a loop, how many times do you write 'print hello'?", }, solution: { answer: 1, tolerance: 0 } },
+        ]},
+      ],
+    },
+    {
+      title: "Scientific Thinking",
+      slug: "scientific-thinking",
+      domain: "Science",
+      difficulty: 1,
+      lessons: [
+        { title: "Observing the World", minutes: 8, blocks: [
+          { type: BlockType.TEXT_EXPLANATION, content: { prompt: "Science starts with **observation**. Look around and notice what happens. Why does ice melt? Why do plants grow toward the sun?\n\nEvery scientific discovery begins with a question." } },
+          { type: BlockType.MULTIPLE_CHOICE, content: { prompt: "What does science begin with?", options: ["An answer", "A question", "A formula", "A computer"] }, solution: { correctIndex: 1 } },
+        ]},
+        { title: "Hypotheses", minutes: 10, blocks: [
+          { type: BlockType.TEXT_EXPLANATION, content: { prompt: "A **hypothesis** is an educated guess about how something works. You then test it with an experiment.\n\nExample: 'If plants get more sunlight, they will grow taller.'" } },
+          { type: BlockType.MULTIPLE_CHOICE, content: { prompt: "What do you call an educated guess in science?", options: ["A fact", "A hypothesis", "A conclusion", "A law"] }, solution: { correctIndex: 1 } },
+        ]},
+      ],
+    },
+    {
+      title: "Probability & Chance",
+      slug: "probability-and-chance",
+      domain: "Math",
+      difficulty: 2,
+      lessons: [
+        { title: "What is Probability?", minutes: 8, blocks: [
+          { type: BlockType.TEXT_EXPLANATION, content: { prompt: "**Probability** tells us how likely something is to happen. It's a number from 0 (impossible) to 1 (certain).\n\nA fair coin has a probability of 0.5 (or 50%) of landing on heads." } },
+          { type: BlockType.MULTIPLE_CHOICE, content: { prompt: "What is the probability of a fair coin landing on heads?", options: ["0", "0.25", "0.5", "1"] }, solution: { correctIndex: 2 } },
+        ]},
+        { title: "Calculating Chances", minutes: 10, blocks: [
+          { type: BlockType.TEXT_EXPLANATION, content: { prompt: "To calculate probability: count the **favorable outcomes** and divide by the **total possible outcomes**.\n\n$$\\text{Probability} = \\frac{\\text{favorable}}{\\text{total}}$$\n\nIf you roll a 6-sided die, the chance of rolling a 4 is 1/6." } },
+          { type: BlockType.MULTIPLE_CHOICE, content: { prompt: "What's the probability of rolling an even number on a 6-sided die?", options: ["1/6", "1/3", "1/2", "2/3"] }, solution: { correctIndex: 2 } },
+          { type: BlockType.FILL_IN_BLANK, content: { prompt: "What's the probability of rolling a 1 on a 6-sided die? (Enter as a fraction like 1/2 or a decimal)", }, solution: { answer: "1/6", tolerance: 0 } },
+        ]},
+      ],
+    },
+  ]
+
+  for (const c of otherCourses) {
+    const course = await prisma.course.create({
+      data: { title: c.title, slug: c.slug, domain: c.domain, difficulty: c.difficulty },
+    })
+    for (let i = 0; i < c.lessons.length; i++) {
+      const l = c.lessons[i]
+      const lesson = await prisma.lesson.create({
+        data: { courseId: course.id, order: i + 1, title: l.title, estimatedMinutes: l.minutes },
+      })
+      for (let j = 0; j < l.blocks.length; j++) {
+        const b = l.blocks[j]
+        await prisma.contentBlock.create({
+          data: {
+            lessonId: lesson.id,
+            order: j + 1,
+            blockType: b.type,
+            content: b.content,
+            ...(b.solution ? { solution: b.solution } : {}),
+          },
+        })
+      }
+    }
+  }
+
+  const total = 1 + otherCourses.length
+  const totalLessons = lessons.length + otherCourses.reduce((s, c) => s + c.lessons.length, 0)
+  console.log(`Seeded ${total} courses, ${totalLessons} lessons.`)
 }
 
 main()
