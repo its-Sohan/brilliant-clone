@@ -1,14 +1,20 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import localFont from "next/font/local"
+import { Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { Providers } from "@/components/Providers"
 import { Navbar } from "@/components/Navbar"
 import { CustomCursor } from "@/components/CustomCursor"
 import { ClickSound } from "@/components/ClickSound"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const quantico = localFont({
+  src: [
+    { path: "../../public/fonts/Quantico-Regular.ttf", weight: "400", style: "normal" },
+    { path: "../../public/fonts/Quantico-Italic.ttf", weight: "400", style: "italic" },
+    { path: "../../public/fonts/Quantico-Bold.ttf", weight: "700", style: "normal" },
+    { path: "../../public/fonts/Quantico-BoldItalic.ttf", weight: "700", style: "italic" },
+  ],
+  variable: "--font-quantico",
 })
 
 const geistMono = Geist_Mono({
@@ -29,10 +35,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${quantico.variable} ${geistMono.variable} h-full antialiased`}
       style={{ colorScheme: "light dark" }}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col font-sans">
         <Providers>
           <CustomCursor />
           <ClickSound />
