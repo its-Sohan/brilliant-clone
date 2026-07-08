@@ -203,6 +203,7 @@ async function main() {
           { type: BlockType.TEXT_EXPLANATION, content: { prompt: "Computers are great at spotting and repeating **patterns**. A loop is a way to repeat an action multiple times without writing it over and over." } },
           { type: BlockType.MULTIPLE_CHOICE, content: { prompt: "What programming concept lets you repeat an action?", options: ["A variable", "A loop", "A function", "A comment"] }, solution: { correctIndex: 1 } },
           { type: BlockType.FILL_IN_BLANK, content: { prompt: "If you say 'Hello' 3 times using a loop, how many times do you write 'print hello'?", }, solution: { answer: 1, tolerance: 0 } },
+          { type: BlockType.CODE_CHALLENGE, content: { prompt: "Write code to print each item in the list **fruits** one per line.\n\nUse a **for loop**: `for (const f of fruits) { ... }`", starterCode: "const fruits = ['apple', 'banana', 'cherry']\n\n// Write your code below:", language: "javascript" }, solution: { expectedOutput: "apple\nbanana\ncherry" } },
         ]},
       ],
     },
