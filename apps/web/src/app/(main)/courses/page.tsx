@@ -2,7 +2,7 @@ import Link from "next/link"
 import { prisma } from "@/lib/db"
 import { BarChart3, Code2, Beaker, BookOpen, ChevronRight } from "lucide-react"
 
-export const dynamic = "force-dynamic"
+export const revalidate = 60
 
 const domainIcons: Record<string, typeof BookOpen> = {
   Math: BarChart3,
