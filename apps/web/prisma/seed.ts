@@ -112,6 +112,30 @@ const lessons = [
         content: { prompt: "What is **6 × 7**? Type the number." },
         solution: { answer: 42, tolerance: 0 },
       },
+      {
+        type: BlockType.DRAG_AND_DROP,
+        content: {
+          prompt: "Sort these numbers into **Even** and **Odd** zones. Drag each number to the correct bucket.",
+          zones: [
+            { id: "even", label: "Even Numbers" },
+            { id: "odd", label: "Odd Numbers" },
+          ],
+          draggables: [
+            { id: "n2", label: "2", correctZone: "even" },
+            { id: "n3", label: "3", correctZone: "odd" },
+            { id: "n4", label: "4", correctZone: "even" },
+            { id: "n5", label: "5", correctZone: "odd" },
+            { id: "n6", label: "6", correctZone: "even" },
+            { id: "n7", label: "7", correctZone: "odd" },
+          ],
+        },
+        solution: {
+          zones: {
+            even: ["n2", "n4", "n6"],
+            odd: ["n3", "n5", "n7"],
+          },
+        },
+      },
     ],
   },
 ]
