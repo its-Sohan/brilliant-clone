@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,6 +12,8 @@ import { Label } from "@/components/ui/label"
 export default function SignupPage() {
   const router = useRouter()
   const t = useTranslations("auth")
+  const locale = useLocale()
+  const cb = (path: string) => `/${locale}${path}`
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -33,19 +35,19 @@ export default function SignupPage() {
       setLoading(false)
       return
     }
-    await signIn("credentials", { email, password, callbackUrl: "/courses" })
+    await signIn("credentials", { email, password, callbackUrl: cb("/courses") })
   }
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <Link href="/" className="text-2xl font-bold tracking-tight">kakkoii</Link>
+          <Link href={cb("")} className="text-2xl font-bold tracking-tight">kakkoii</Link>
           <h1 className="mt-6 text-2xl font-semibold tracking-tight">{t("signupTitle")}</h1>
           <p className="mt-2 text-sm text-muted-foreground">{t("signupSubtitle")}</p>
         </div>
         <div className="space-y-4">
-          <Button variant="outline" className="w-full h-11" onClick={() => signIn("google", { callbackUrl: "/courses" })}>
+          <Button variant="outline" className="w-full h-11" onClick={() => signIn("google", { callbackUrl: cb("/courses") })}>
             <svg className="mr-2 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
               <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -77,7 +79,7 @@ export default function SignupPage() {
         </div>
         <p className="mt-8 text-center text-sm text-muted-foreground">
           {t("hasAccount")}{" "}
-          <Link href="/login" className="font-medium underline underline-offset-4 hover:text-primary">{t("signInLink")}</Link>
+          <Link href={cb("/login")} className="font-medium underline underline-offset-4 hover:text-primary">{t("signInLink")}</Link>
         </p>
       </div>
     </div>
