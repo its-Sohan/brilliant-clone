@@ -1,6 +1,7 @@
 FROM node:22-alpine
 
 RUN npm install -g pnpm@latest
+RUN npm install -g prisma@6
 WORKDIR /app
 
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
@@ -13,7 +14,8 @@ COPY . .
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN pnpm db:generate && pnpm build
+RUN prisma generate --schema=apps/web/prisma/schema.prisma
+RUN pnpm --filter web build
 
 EXPOSE 3000
 
