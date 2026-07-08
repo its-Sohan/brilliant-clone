@@ -103,6 +103,7 @@ model ContentBlock {
   order     Int
   blockType BlockType
   content   Json
+  solution  Json?
   hints     Json?
   createdAt DateTime  @default(now())
 
@@ -128,7 +129,7 @@ model UserResponse {
   id           String   @id @default(uuid())
   userId       String
   blockId      String
-  input        Json
+  input        Json?
   isCorrect    Boolean
   timeMs       Int?
   attemptNumber Int     @default(1)
