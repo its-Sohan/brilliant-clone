@@ -1,6 +1,7 @@
 "use client"
 
 import { useSession, signOut } from "next-auth/react"
+import { useTranslations, useLocale } from "next-intl"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -11,22 +12,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { LangToggle } from "./LangToggle"
 
 export function Navbar() {
   const { data: session } = useSession()
+  const t = useTranslations("nav")
+  const locale = useLocale()
+  const l = (path: string) => `/${locale}${path}`
 
   return (
     <nav className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-14 items-center justify-between px-4">
-        <Link href="/" className="text-xl font-bold tracking-tight">
+        <Link href={l("")} className="text-xl font-bold tracking-tight">
           kakkoii
         </Link>
-        <div className="flex items-center gap-4">
-          <Link href="/courses">
-            <Button variant="ghost" size="sm">Courses</Button>
-          </Link>
-          <Link href="/dashboard">
-            <Button variant="ghost" size="sm">Progress</Button>
+        <div className="flex items-center gap-2">
+          <LangToggle />
+          <Link href={l("/courses")}>
+            <Button variant="ghost" size="sm">{t("courses")}</Button>
           </Link>
           {session?.user ? (
             <DropdownMenu>
@@ -45,21 +48,24 @@ export function Navbar() {
                   {session.user.email}
                 </div>
                 <DropdownMenuSeparator />
-                <Link href="/admin" className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&>svg]:size-4 [&>svg]:shrink-0">
-                  Admin
+                <Link href={l("/dashboard")} className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
+                  {t("progress")}
+                </Link>
+                <Link href={l("/admin")} className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
+                  {t("admin")}
                 </Link>
                 <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer">
-                  Sign out
+                  {t("signOut")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <div className="flex items-center gap-2">
-              <Link href="/login">
-                <Button variant="outline" size="sm">Log in</Button>
+              <Link href={l("/login")}>
+                <Button variant="outline" size="sm">{t("login")}</Button>
               </Link>
-              <Link href="/signup">
-                <Button size="sm">Sign up</Button>
+              <Link href={l("/signup")}>
+                <Button size="sm">{t("signup")}</Button>
               </Link>
             </div>
           )}
