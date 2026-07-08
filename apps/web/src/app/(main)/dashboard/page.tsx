@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Brain, BarChart3, ArrowLeft, RotateCcw, Sparkles } from "lucide-react"
+import { Brain, BarChart3, ArrowLeft, RotateCcw, Sparkles, Zap, Target, Medal } from "lucide-react"
 
 interface Skill {
   conceptTag: string
@@ -18,19 +18,40 @@ interface ReviewItem {
   interval: number
 }
 
+interface RecommendBlock {
+  id: string
+  difficulty: number
+  blockType: string
+  conceptTags: string[]
+  lessonTitle: string
+}
+
+interface RecData {
+  skillLevel: number
+  totalAttempts: number
+  weakestConcepts: { conceptTag: string; pKnown: number }[]
+  recommendedBlocks: RecommendBlock[]
+  dailyChallenge: RecommendBlock | null
+  masteredCount: number
+  zoneRange: string
+}
+
 export default function DashboardPage() {
   const [skills, setSkills] = useState<Skill[]>([])
   const [reviews, setReviews] = useState<ReviewItem[]>([])
+  const [recs, setRecs] = useState<RecData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     Promise.all([
       fetch("/api/progress/skill").then((r) => r.json()),
       fetch("/api/progress/review").then((r) => r.json()),
+      fetch("/api/progress/recommend").then((r) => r.json()),
     ])
-      .then(([skillData, reviewData]) => {
+      .then(([skillData, reviewData, recData]) => {
         setSkills(Array.isArray(skillData) ? skillData : [])
         setReviews(Array.isArray(reviewData) ? reviewData : [])
+        setRecs(recData)
         setLoading(false)
       })
       .catch(() => setLoading(false))
@@ -61,7 +82,7 @@ export default function DashboardPage() {
         </div>
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Your Knowledge</h1>
-          <p className="text-muted-foreground text-sm">Track your concept mastery across all courses</p>
+          <p className="text-muted-foreground text-sm">Track your concept mastery and find your next challenge</p>
         </div>
       </div>
 
@@ -70,21 +91,10 @@ export default function DashboardPage() {
           <BarChart3 className="mx-auto size-10 text-muted-foreground/40 animate-pulse" />
           <p className="mt-4 text-muted-foreground">Loading your progress...</p>
         </div>
-      ) : skills.length === 0 ? (
-        <div className="text-center py-16 border rounded-xl bg-card">
-          <Brain className="mx-auto size-12 text-muted-foreground/40" />
-          <h2 className="mt-4 text-lg font-semibold">No skills tracked yet</h2>
-          <p className="mt-2 text-sm text-muted-foreground max-w-sm mx-auto">
-            Complete exercises in any course to start building your skill profile.
-          </p>
-          <Link href="/courses" className="mt-6 inline-flex items-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
-            Browse courses
-          </Link>
-        </div>
       ) : (
         <div className="space-y-8">
-          {/* Overview */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {/* Overview cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
             <div className="rounded-xl border bg-card p-4 text-center">
               <p className="text-2xl font-bold">{skills.length}</p>
               <p className="text-xs text-muted-foreground">Concepts</p>
@@ -95,13 +105,71 @@ export default function DashboardPage() {
             </div>
             <div className="rounded-xl border bg-card p-4 text-center">
               <p className="text-2xl font-bold text-amber-500">{learning.length}</p>
-              <p className="text-xs text-muted-foreground">In progress</p>
+              <p className="text-xs text-muted-foreground">Learning</p>
             </div>
             <div className="rounded-xl border bg-card p-4 text-center">
-              <p className="text-2xl font-bold">{skills.reduce((s, sk) => s + sk.numAttempts, 0)}</p>
-              <p className="text-xs text-muted-foreground">Total attempts</p>
+              <p className="text-2xl font-bold">{recs?.totalAttempts ?? skills.reduce((s, sk) => s + sk.numAttempts, 0)}</p>
+              <p className="text-xs text-muted-foreground">Attempts</p>
+            </div>
+            <div className="rounded-xl border bg-card p-4 text-center">
+              <p className="text-2xl font-bold">{recs?.skillLevel ?? "-"}</p>
+              <p className="text-xs text-muted-foreground">Skill level</p>
             </div>
           </div>
+
+          {/* Daily Challenge */}
+          {recs?.dailyChallenge && (
+            <section className="rounded-xl border-2 border-purple-200 dark:border-purple-900 bg-gradient-to-br from-purple-50 to-card dark:from-purple-950/20 dark:to-card p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Medal size={20} className="text-purple-500" />
+                <h2 className="text-lg font-semibold">Daily Challenge</h2>
+              </div>
+              <p className="text-sm text-muted-foreground mb-3">
+                A tough problem to stretch your skills (difficulty {recs.dailyChallenge.difficulty}/10)
+              </p>
+              <p className="text-xs text-muted-foreground mb-3">
+                Concepts: {recs.dailyChallenge.conceptTags.join(", ")}
+              </p>
+              <Link
+                href={`/courses`}
+                className="inline-flex items-center gap-2 rounded-lg bg-purple-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-purple-700 transition-colors"
+              >
+                <Zap size={16} />
+                Take challenge
+              </Link>
+            </section>
+          )}
+
+          {/* Recommended blocks */}
+          {recs?.recommendedBlocks && recs.recommendedBlocks.length > 0 && (
+            <section>
+              <div className="flex items-center gap-2 mb-4">
+                <Target size={18} className="text-primary" />
+                <h2 className="text-lg font-semibold">Recommended for you</h2>
+                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                  Zone: {recs.zoneRange}
+                </span>
+              </div>
+              <div className="space-y-3">
+                {recs.recommendedBlocks.map((b) => (
+                  <div key={b.id} className="rounded-xl border bg-card p-4 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">{b.lessonTitle}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {b.blockType.replace(/_/g, " ")} &middot; Difficulty {b.difficulty}/10
+                      </p>
+                    </div>
+                    <Link
+                      href="/courses"
+                      className="text-xs text-primary font-medium hover:underline"
+                    >
+                      Start
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Due for review */}
           {reviews.length > 0 && (
@@ -133,7 +201,7 @@ export default function DashboardPage() {
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-3">Rate each concept: 1=forgot &middot; 3=recalled &middot; 5=perfect</p>
+              <p className="text-xs text-muted-foreground mt-3">Rate: 1=forgot &middot; 3=recalled &middot; 5=perfect</p>
             </section>
           )}
 

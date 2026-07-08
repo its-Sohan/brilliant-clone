@@ -37,6 +37,7 @@ model User {
   responses      UserResponse[]
   skills         SkillProficiency[]
   spacedRepetition SpacedRepetition[]
+  skillLevel     UserSkillLevel?
 }
 
 model Account {
@@ -110,10 +111,22 @@ model ContentBlock {
   solution  Json?
   hints     Json?
   conceptTags String[]
+  difficulty Int     @default(5)
   createdAt DateTime  @default(now())
 
   lesson    Lesson          @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   responses UserResponse[]
+}
+
+model UserSkillLevel {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  domain     String   @default("general")
+  skillLevel Float    @default(5.0)
+  numBlocks  Int      @default(0)
+  lastUpdated DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model UserLessonProgress {
