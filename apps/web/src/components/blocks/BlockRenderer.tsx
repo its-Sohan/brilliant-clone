@@ -7,6 +7,7 @@ import { dragAndDrop } from "./DragAndDrop"
 import { graphBuilder } from "./GraphBuilder"
 import { simulation } from "./Simulation"
 import { codeChallenge } from "./CodeChallenge"
+import { HintButton } from "./HintButton"
 import type { BlockData, BlockResult } from "./types"
 
 const renderers = [textExplanation, multipleChoice, fillInBlank, dragAndDrop, graphBuilder, simulation, codeChallenge]
@@ -14,6 +15,7 @@ const rendererMap = Object.fromEntries(renderers.map((r) => [r.type, r.component
 
 export function BlockRenderer({ block, onComplete }: { block: BlockData; onComplete: (result: BlockResult) => void }) {
   const Component = rendererMap[block.blockType]
+  const hints = (block.hints as { items: string[] } | null)?.items ?? []
 
   if (!Component) {
     return (
@@ -23,5 +25,10 @@ export function BlockRenderer({ block, onComplete }: { block: BlockData; onCompl
     )
   }
 
-  return <Component block={block} onComplete={onComplete} />
+  return (
+    <div className="space-y-4">
+      <Component block={block} onComplete={onComplete} />
+      <HintButton hints={hints} blockId={block.id} />
+    </div>
+  )
 }
