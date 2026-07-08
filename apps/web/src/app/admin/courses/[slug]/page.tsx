@@ -1,7 +1,8 @@
 import Link from "next/link"
-import { notFound, redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import { prisma } from "@/lib/db"
-import { ArrowLeft, FileText, ChevronRight, Plus } from "lucide-react"
+import { ArrowLeft, ChevronRight, Plus } from "lucide-react"
+import { DeleteLessonButton } from "./DeleteLessonButton"
 
 export const dynamic = "force-dynamic"
 
@@ -35,13 +36,6 @@ async function createLesson(formData: FormData) {
       difficulty: 5,
     },
   })
-}
-
-async function deleteLesson(formData: FormData) {
-  "use server"
-  const id = formData.get("id") as string
-  if (!id) return
-  await prisma.lesson.delete({ where: { id } })
 }
 
 export default async function AdminCoursePage({
@@ -119,16 +113,7 @@ export default async function AdminCoursePage({
               </div>
             </Link>
             <div className="flex items-center gap-2 shrink-0">
-              <form action={deleteLesson}>
-                <input type="hidden" name="id" value={lesson.id} />
-                <button
-                  type="submit"
-                  className="text-xs text-muted-foreground hover:text-destructive transition-colors"
-                  onClick={(e) => { if (!confirm("Delete lesson?")) e.preventDefault() }}
-                >
-                  Delete
-                </button>
-              </form>
+              <DeleteLessonButton lessonId={lesson.id} />
               <ChevronRight size={18} className="text-muted-foreground/40" />
             </div>
           </div>
