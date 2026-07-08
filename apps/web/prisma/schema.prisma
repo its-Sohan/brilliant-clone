@@ -23,6 +23,12 @@ enum LessonStatus {
   COMPLETED
 }
 
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+  DEPRECATED
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -88,14 +94,16 @@ model Course {
 }
 
 model Lesson {
-  id               String   @id @default(uuid())
+  id               String        @id @default(uuid())
   courseId         String
   order            Int
   title            String
-  estimatedMinutes Int      @default(10)
+  estimatedMinutes Int           @default(10)
   conceptTags      String[]
   prerequisiteIds  String[]
-  createdAt        DateTime @default(now())
+  status           PublishStatus @default(DRAFT)
+  version          Int           @default(1)
+  createdAt        DateTime      @default(now())
 
   course       Course               @relation(fields: [courseId], references: [id], onDelete: Cascade)
   blocks       ContentBlock[]
@@ -103,16 +111,17 @@ model Lesson {
 }
 
 model ContentBlock {
-  id        String    @id @default(uuid())
-  lessonId  String
-  order     Int
-  blockType BlockType
-  content   Json
-  solution  Json?
-  hints     Json?
-  conceptTags String[]
-  difficulty Int     @default(5)
-  createdAt DateTime  @default(now())
+  id           String    @id @default(uuid())
+  lessonId     String
+  order        Int
+  blockType    BlockType
+  content      Json
+  solution     Json?
+  hints        Json?
+  conceptTags  String[]
+  difficulty   Int       @default(5)
+  variantGroup String?   // "A" or "B" for A/B testing; null = shown to all
+  createdAt    DateTime  @default(now())
 
   lesson    Lesson          @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   responses UserResponse[]

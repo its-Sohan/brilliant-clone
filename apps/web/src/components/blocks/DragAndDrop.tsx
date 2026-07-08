@@ -88,7 +88,7 @@ export const dragAndDrop: BlockRenderer = {
   component: DragAndDropBlock,
 }
 
-function DragAndDropBlock({ block, onComplete }: BlockProps) {
+export function DragAndDropBlock({ block, onComplete }: BlockProps) {
   const content = block.content as DragContent
   const solution = block.solution as DragSolution | null
 

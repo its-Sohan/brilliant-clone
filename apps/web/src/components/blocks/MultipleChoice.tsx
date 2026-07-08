@@ -9,7 +9,7 @@ export const multipleChoice: BlockRenderer = {
   component: MultipleChoiceBlock,
 }
 
-function MultipleChoiceBlock({ block, onComplete }: BlockProps) {
+export function MultipleChoiceBlock({ block, onComplete }: BlockProps) {
   const [selected, setSelected] = useState<number | null>(null)
   const [submitted, setSubmitted] = useState(false)
   const correctIndex = (block.solution as { correctIndex?: number } | null)?.correctIndex ?? -1

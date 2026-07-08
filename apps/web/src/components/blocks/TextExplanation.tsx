@@ -7,7 +7,7 @@ export const textExplanation: BlockRenderer = {
   component: TextExplanationBlock,
 }
 
-function TextExplanationBlock({ block, onComplete }: BlockProps) {
+export function TextExplanationBlock({ block, onComplete }: BlockProps) {
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div className="prose prose-sm dark:prose-invert max-w-none">

@@ -14,7 +14,7 @@ export const fillInBlank: BlockRenderer = {
   component: FillInBlankBlock,
 }
 
-function FillInBlankBlock({ block, onComplete }: BlockProps) {
+export function FillInBlankBlock({ block, onComplete }: BlockProps) {
   const [value, setValue] = useState("")
   const [submitted, setSubmitted] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)

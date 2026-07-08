@@ -1,20 +1,53 @@
 "use client"
 
-import { textExplanation } from "./TextExplanation"
-import { multipleChoice } from "./MultipleChoice"
-import { fillInBlank } from "./FillInBlank"
-import { dragAndDrop } from "./DragAndDrop"
-import { graphBuilder } from "./GraphBuilder"
-import { simulation } from "./Simulation"
-import { codeChallenge } from "./CodeChallenge"
+import { useMemo } from "react"
+import dynamic from "next/dynamic"
 import { HintButton } from "./HintButton"
 import type { BlockData, BlockResult } from "./types"
 
-const renderers = [textExplanation, multipleChoice, fillInBlank, dragAndDrop, graphBuilder, simulation, codeChallenge]
-const rendererMap = Object.fromEntries(renderers.map((r) => [r.type, r.component]))
+const TextExplanation = dynamic(() => import("./TextExplanation").then((m) => ({ default: m.TextExplanationBlock })), { ssr: false })
+const MultipleChoice = dynamic(() => import("./MultipleChoice").then((m) => ({ default: m.MultipleChoiceBlock })), { ssr: false })
+const FillInBlank = dynamic(() => import("./FillInBlank").then((m) => ({ default: m.FillInBlankBlock })), { ssr: false })
+const DragAndDropBlock = dynamic(() => import("./DragAndDrop").then((m) => ({ default: m.DragAndDropBlock })), { ssr: false })
+const GraphBuilderBlock = dynamic(() => import("./GraphBuilder").then((m) => ({ default: m.GraphBuilderBlock })), { ssr: false })
+const SimulationBlock = dynamic(() => import("./Simulation").then((m) => ({ default: m.SimulationBlock })), { ssr: false })
+const CodeChallengeBlock = dynamic(() => import("./CodeChallenge").then((m) => ({ default: m.CodeChallengeBlock })), { ssr: false })
+
+const rendererMap: Record<string, React.ComponentType<{ block: BlockData; onComplete: (result: BlockResult) => void }>> = {
+  TEXT_EXPLANATION: TextExplanation,
+  MULTIPLE_CHOICE: MultipleChoice,
+  FILL_IN_BLANK: FillInBlank,
+  DRAG_AND_DROP: DragAndDropBlock,
+  GRAPH_BUILDER: GraphBuilderBlock,
+  SIMULATION: SimulationBlock,
+  CODE_CHALLENGE: CodeChallengeBlock,
+}
+
+// A/B test: assign user to variant group based on localStorage
+function getVariantGroup(): "A" | "B" {
+  if (typeof window === "undefined") return "A"
+  try {
+    let group = localStorage.getItem("kakkoii_variant")
+    if (group !== "A" && group !== "B") {
+      group = Math.random() < 0.5 ? "A" : "B"
+      localStorage.setItem("kakkoii_variant", group)
+    }
+    return group as "A" | "B"
+  } catch {
+    return "A"
+  }
+}
 
 export function BlockRenderer({ block, onComplete }: { block: BlockData; onComplete: (result: BlockResult) => void }) {
+  const variantGroup = useMemo(() => getVariantGroup(), [])
   const Component = rendererMap[block.blockType]
+
+  // A/B test filter: skip variant blocks that don't match user's group
+  const blockVariant = (block as BlockData & { variantGroup?: string | null }).variantGroup
+  if (blockVariant && blockVariant !== variantGroup) {
+    return null
+  }
+
   const hints = (block.hints as { items: string[] } | null)?.items ?? []
 
   if (!Component) {

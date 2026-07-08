@@ -19,7 +19,7 @@ const BAR_GAP = 20
 const CHART_HEIGHT = 200
 const CHART_WIDTH = 160
 
-function SimulationBlock({ block, onComplete }: BlockProps) {
+export function SimulationBlock({ block, onComplete }: BlockProps) {
   const content = block.content as SimulationContent
   const [results, setResults] = useState<{ heads: number; tails: number; total: number; history: number[] }>({
     heads: 0,

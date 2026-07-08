@@ -38,7 +38,7 @@ export const codeChallenge: BlockRenderer = {
   component: CodeChallengeBlock,
 }
 
-function CodeChallengeBlock({ block, onComplete }: BlockProps) {
+export function CodeChallengeBlock({ block, onComplete }: BlockProps) {
   const content = block.content as CodeContent
   const solution = block.solution as CodeSolution | null
 

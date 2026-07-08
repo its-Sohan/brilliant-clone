@@ -41,7 +41,7 @@ function toData(screen: number, axisRange: number, padding: number, size: number
   return ((screen - padding) / plotSize) * (axisRange * 2) - axisRange
 }
 
-function GraphBuilderBlock({ block, onComplete }: BlockProps) {
+export function GraphBuilderBlock({ block, onComplete }: BlockProps) {
   const content = block.content as GraphContent
   const solution = block.solution as GraphSolution | null
   const svgRef = useRef<SVGSVGElement>(null)
