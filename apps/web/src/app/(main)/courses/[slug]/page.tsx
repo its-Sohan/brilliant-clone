@@ -1,6 +1,9 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/db"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { CourseProgress } from "./CourseProgress"
 
 export const dynamic = "force-dynamic"
 
@@ -26,6 +29,23 @@ export default async function CoursePage({
     notFound()
   }
 
+  const session = await getServerSession(authOptions)
+  let progress: { lessonId: string }[] = []
+
+  if (session?.user?.id) {
+    progress = await prisma.userLessonProgress.findMany({
+      where: {
+        userId: session.user.id,
+        lessonId: { in: course.lessons.map((l) => l.id) },
+        status: "COMPLETED",
+      },
+      select: { lessonId: true },
+    })
+  }
+
+  const completedIds = new Set(progress.map((p) => p.lessonId))
+  const completedCount = completedIds.size
+
   return (
     <div className="container mx-auto px-4 py-12">
       <Link
@@ -44,32 +64,14 @@ export default async function CoursePage({
         </span>
         <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{course.title}</h1>
         <p className="mt-2 text-muted-foreground">
-          {course.lessons.length} lesson{course.lessons.length !== 1 ? "s" : ""} &middot; Difficulty {course.difficulty}/5
+          {course.lessons.length} lesson{course.lessons.length !== 1 ? "s" : ""}
+          {completedCount > 0 && (
+            <span className="ml-2 text-primary"> &middot; {completedCount} completed</span>
+          )}
         </p>
       </div>
 
-      <div className="space-y-3">
-        {course.lessons.map((lesson, i) => (
-          <Link
-            key={lesson.id}
-            href={`/courses/${course.slug}/${lesson.id}`}
-            className="group flex items-center gap-5 rounded-xl border bg-card p-5 transition-all hover:shadow-md hover:-translate-y-0.5"
-          >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-medium group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-              {i + 1}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium group-hover:text-primary transition-colors">{lesson.title}</p>
-              <p className="text-sm text-muted-foreground">
-                {lesson.estimatedMinutes} min &middot; {lesson._count.blocks} exercise{lesson._count.blocks !== 1 ? "s" : ""}
-              </p>
-            </div>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-5 text-muted-foreground/40 group-hover:text-primary transition-colors">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
-          </Link>
-        ))}
-      </div>
+      <CourseProgress lessons={course.lessons} slug={slug} completedIds={Array.from(completedIds)} />
     </div>
   )
 }

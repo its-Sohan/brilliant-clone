@@ -36,7 +36,7 @@ export function ClickSound() {
       filter.frequency.value = 3000
       filter.Q.value = 1.5
 
-      gain.gain.setValueAtTime(0.15, ctx.currentTime)
+      gain.gain.setValueAtTime(0.16, ctx.currentTime)
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.02)
 
       src.connect(filter)
