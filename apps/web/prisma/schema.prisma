@@ -7,6 +7,22 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum BlockType {
+  TEXT_EXPLANATION
+  MULTIPLE_CHOICE
+  FILL_IN_BLANK
+  DRAG_AND_DROP
+  GRAPH_BUILDER
+  CODE_CHALLENGE
+  SIMULATION
+}
+
+enum LessonStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -15,8 +31,10 @@ model User {
   image     String?
   createdAt DateTime @default(now())
 
-  accounts Account[]
-  sessions Session[]
+  accounts     Account[]
+  sessions     Session[]
+  lessonProgress UserLessonProgress[]
+  responses    UserResponse[]
 }
 
 model Account {
@@ -52,4 +70,70 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Course {
+  id         String   @id @default(uuid())
+  title      String
+  slug       String   @unique
+  domain     String
+  difficulty Int      @default(1)
+  imageUrl   String?
+  createdAt  DateTime @default(now())
+
+  lessons Lesson[]
+}
+
+model Lesson {
+  id               String   @id @default(uuid())
+  courseId         String
+  order            Int
+  title            String
+  estimatedMinutes Int      @default(10)
+  createdAt        DateTime @default(now())
+
+  course       Course               @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  blocks       ContentBlock[]
+  userProgress UserLessonProgress[]
+}
+
+model ContentBlock {
+  id        String    @id @default(uuid())
+  lessonId  String
+  order     Int
+  blockType BlockType
+  content   Json
+  hints     Json?
+  createdAt DateTime  @default(now())
+
+  lesson    Lesson          @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  responses UserResponse[]
+}
+
+model UserLessonProgress {
+  id        String       @id @default(uuid())
+  userId    String
+  lessonId  String
+  status    LessonStatus @default(NOT_STARTED)
+  score     Float?
+  completedAt DateTime?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model UserResponse {
+  id           String   @id @default(uuid())
+  userId       String
+  blockId      String
+  input        Json
+  isCorrect    Boolean
+  timeMs       Int?
+  attemptNumber Int     @default(1)
+  createdAt    DateTime @default(now())
+
+  user  User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  block ContentBlock @relation(fields: [blockId], references: [id], onDelete: Cascade)
 }
