@@ -158,12 +158,21 @@ async function main() {
 
   for (let i = 0; i < lessons.length; i++) {
     const l = lessons[i]
+    const tags = l.title.includes("Numbers")
+      ? ["counting", "number-sense"]
+      : l.title.includes("Addition")
+        ? ["addition", "subtraction"]
+        : l.title.includes("Multiplication")
+          ? ["multiplication", "arithmetic"]
+          : []
+
     const lesson = await prisma.lesson.create({
       data: {
         courseId: course.id,
         order: i + 1,
         title: l.title,
         estimatedMinutes: l.minutes,
+        conceptTags: tags,
       },
     })
 
@@ -253,8 +262,17 @@ async function main() {
     })
     for (let i = 0; i < c.lessons.length; i++) {
       const l = c.lessons[i]
+      const tags =
+        c.slug === "thinking-in-code"
+          ? ["code", "algorithms"]
+          : c.slug === "scientific-thinking"
+            ? ["science", "experimentation"]
+            : c.slug === "probability-and-chance"
+              ? ["probability", "statistics"]
+              : []
+
       const lesson = await prisma.lesson.create({
-        data: { courseId: course.id, order: i + 1, title: l.title, estimatedMinutes: l.minutes },
+        data: { courseId: course.id, order: i + 1, title: l.title, estimatedMinutes: l.minutes, conceptTags: tags },
       })
       for (let j = 0; j < l.blocks.length; j++) {
         const b = l.blocks[j]
