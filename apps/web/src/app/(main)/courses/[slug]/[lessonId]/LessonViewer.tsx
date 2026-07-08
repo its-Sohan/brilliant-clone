@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
+import { ArrowLeft, ArrowRight, CheckCircle2, BookOpen, PenTool, ListChecks, ChevronLeft, ChevronRight as ChevronRightIcon } from "lucide-react"
 import { BlockRenderer } from "@/components/blocks/BlockRenderer"
 import { useLessonProgress } from "@/lib/useLessonProgress"
 import type { BlockData, BlockResult } from "@/components/blocks/types"
@@ -127,8 +128,15 @@ export function LessonViewer({ lesson, courseTitle, courseSlug, nextLessonId, in
                 >
                   {i + 1}
                 </span>
+                {block.blockType === "TEXT_EXPLANATION" ? (
+                  <BookOpen size={12} className="shrink-0" />
+                ) : block.blockType === "MULTIPLE_CHOICE" ? (
+                  <ListChecks size={12} className="shrink-0" />
+                ) : (
+                  <PenTool size={12} className="shrink-0" />
+                )}
                 <span className="truncate">
-                  {block.blockType === "TEXT_EXPLANATION" ? "Read" : "Exercise"}
+                  {block.blockType === "TEXT_EXPLANATION" ? "Read" : block.blockType === "MULTIPLE_CHOICE" ? "Choose" : "Type"}
                 </span>
               </button>
             )
@@ -159,27 +167,31 @@ export function LessonViewer({ lesson, courseTitle, courseSlug, nextLessonId, in
 
         <div className="flex-1 flex items-start justify-center px-4 py-12 md:py-16">
           {finishing ? (
-            <div className="text-center py-20 space-y-4">
-              <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
+            <div className="text-center py-20 space-y-5">
+              <div className="size-14 rounded-full bg-green-500/10 flex items-center justify-center mx-auto">
+                <CheckCircle2 size={32} className="text-green-500" />
               </div>
-              <h2 className="text-xl font-semibold">Lesson complete!</h2>
-              <p className="text-sm text-muted-foreground">Great work finishing this lesson.</p>
-              <div className="flex items-center justify-center gap-3">
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold">Lesson complete!</h2>
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                  Great work finishing <span className="font-medium text-foreground">{lesson.title}</span>.
+                </p>
+              </div>
+              <div className="flex items-center justify-center gap-3 pt-2">
                 {nextLessonId && (
                   <Link
                     href={`/courses/${courseSlug}/${nextLessonId}`}
-                    className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
                   >
                     Next lesson
+                    <ArrowRight size={16} />
                   </Link>
                 )}
                 <Link
                   href={`/courses/${courseSlug}`}
-                  className="inline-flex items-center justify-center rounded-lg border px-6 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+                  className="inline-flex items-center gap-2 rounded-lg border px-6 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
                 >
+                  <ArrowLeft size={16} />
                   Back to course
                 </Link>
               </div>
@@ -208,30 +220,31 @@ export function LessonViewer({ lesson, courseTitle, courseSlug, nextLessonId, in
             <button
               onClick={() => goTo(currentIndex - 1)}
               disabled={isFirst}
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground disabled:opacity-30 transition-opacity"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground disabled:opacity-30 transition-opacity hover:text-foreground"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-4">
-                <path d="M15 18l-6-6 6-6"/>
-              </svg>
+              <ChevronLeft size={16} />
               Previous
             </button>
+
+            <span className="text-xs text-muted-foreground">
+              {currentIndex + 1} / {totalBlocks}
+            </span>
 
             {isLast ? (
               <button
                 onClick={() => { setFinishing(true); markComplete() }}
-                className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
               >
+                <CheckCircle2 size={16} />
                 Finish lesson
               </button>
             ) : (
               <button
                 onClick={() => goTo(currentIndex + 1)}
-                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Next
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-4">
-                  <path d="M9 18l6-6-6-6"/>
-                </svg>
+                <ChevronRightIcon size={16} />
               </button>
             )}
           </div>

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { CourseProgress } from "./CourseProgress"
+import { ArrowLeft, BookOpen, Clock, BarChart3 } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -46,7 +47,6 @@ export default async function CoursePage({
   const completedIds = new Set(progress.map((p) => p.lessonId))
   const completedCount = completedIds.size
 
-  // Calculate streak for logged-in users
   let streak = 0
   if (session?.user?.id) {
     const allProgress = await prisma.userLessonProgress.findMany({
@@ -67,14 +67,12 @@ export default async function CoursePage({
     const yesterday = new Date(today)
     yesterday.setDate(yesterday.getDate() - 1)
     const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`
-
     let checkDate = todayStr
     if (!dates.includes(todayStr) && dates.includes(yesterdayStr)) {
       checkDate = yesterdayStr
     } else if (!dates.includes(todayStr) && !dates.includes(yesterdayStr)) {
       checkDate = ""
     }
-
     if (checkDate) {
       const check = new Date(checkDate)
       for (let i = 0; i < 365; i++) {
@@ -87,29 +85,41 @@ export default async function CoursePage({
     }
   }
 
+  const totalLessons = course.lessons.length
+  const totalMinutes = course.lessons.reduce((s, l) => s + l.estimatedMinutes, 0)
+
   return (
     <div className="container mx-auto px-4 py-12">
       <Link
         href="/courses"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-4">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
+        <ArrowLeft size={16} />
         Back to courses
       </Link>
 
-      <div className="mt-8 mb-12">
+      <div className="mt-6 mb-10">
         <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-medium text-primary">
+          <BarChart3 size={12} className="mr-1.5" />
           {course.domain}
         </span>
         <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">{course.title}</h1>
-        <p className="mt-2 text-muted-foreground">
-          {course.lessons.length} lesson{course.lessons.length !== 1 ? "s" : ""}
+        <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <BookOpen size={16} />
+            {totalLessons} lesson{totalLessons !== 1 ? "s" : ""}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Clock size={16} />
+            ~{totalMinutes} min
+          </span>
+          <span>Difficulty {course.difficulty}/5</span>
           {completedCount > 0 && (
-            <span className="ml-2 text-primary"> &middot; {completedCount} completed</span>
+            <span className="text-primary font-medium">
+              {completedCount} completed
+            </span>
           )}
-        </p>
+        </div>
       </div>
 
       <CourseProgress

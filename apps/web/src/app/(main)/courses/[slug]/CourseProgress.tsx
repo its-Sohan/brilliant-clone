@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Lock, ChevronRight } from "lucide-react"
+import { Lock, ChevronRight, CheckCircle2, Flame, Clock, FileText } from "lucide-react"
 
 interface Lesson {
   id: string
@@ -44,7 +44,6 @@ export function CourseProgress({
     } catch {}
     setCompleted(merged)
 
-    // Merge streak: use server value if logged in, otherwise localStorage
     if (!initialStreak) {
       try {
         const streakData = localStorage.getItem(STREAK_KEY)
@@ -63,14 +62,16 @@ export function CourseProgress({
 
   return (
     <div className="space-y-3">
-      {/* Streak banner */}
       {streak > 0 && (
         <div className="flex items-center gap-3 rounded-xl border bg-card p-4 mb-6">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-lg">
-            🔥
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+            <Flame size={22} />
           </div>
           <div>
-            <p className="text-sm font-medium">{streak}-day streak</p>
+            <p className="text-sm font-medium flex items-center gap-1.5">
+              <Flame size={16} className="text-amber-500" />
+              {streak}-day streak
+            </p>
             <p className="text-xs text-muted-foreground">Keep learning every day!</p>
           </div>
         </div>
@@ -79,11 +80,10 @@ export function CourseProgress({
       {lessons.map((lesson, i) => {
         const isCompleted = completed.has(lesson.id)
         const isLocked = i > 0 && !completed.has(lessons[i - 1].id)
-        const isUnlocked = !isLocked && !isCompleted
 
         const content = (
           <div
-            className={`flex items-center gap-5 rounded-xl border bg-card p-5 transition-all ${
+            className={`flex items-center gap-4 rounded-xl border bg-card p-5 transition-all ${
               isCompleted
                 ? "border-primary/30"
                 : isLocked
@@ -101,37 +101,43 @@ export function CourseProgress({
               }`}
             >
               {isCompleted ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M20 6L9 17l-5-5"/>
-                </svg>
+                <CheckCircle2 size={20} />
               ) : isLocked ? (
-                <Lock size={16} />
+                <Lock size={15} />
               ) : (
                 i + 1
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p
-                className={`font-medium transition-colors ${
-                  isCompleted
-                    ? "text-muted-foreground"
-                    : isLocked
-                      ? "text-muted-foreground"
-                      : "group-hover:text-primary"
-                }`}
-              >
-                {lesson.title}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {lesson.estimatedMinutes} min &middot; {lesson._count.blocks} exercise{lesson._count.blocks !== 1 ? "s" : ""}
+              <div className="flex items-center gap-2">
+                <p
+                  className={`font-medium transition-colors ${
+                    isCompleted || isLocked ? "text-muted-foreground" : "group-hover:text-primary"
+                  }`}
+                >
+                  {lesson.title}
+                </p>
+                {isCompleted && (
+                  <CheckCircle2 size={14} className="text-primary shrink-0" />
+                )}
+              </div>
+              <p className="text-sm text-muted-foreground flex items-center gap-3 mt-0.5">
+                <span className="flex items-center gap-1">
+                  <Clock size={13} />
+                  {lesson.estimatedMinutes} min
+                </span>
+                <span className="flex items-center gap-1">
+                  <FileText size={13} />
+                  {lesson._count.blocks} exercise{lesson._count.blocks !== 1 ? "s" : ""}
+                </span>
               </p>
             </div>
             {isCompleted ? (
               <span className="text-xs text-primary font-medium">Done</span>
             ) : isLocked ? (
-              <Lock size={16} className="text-muted-foreground/40" />
+              <Lock size={15} className="text-muted-foreground/40" />
             ) : (
-              <ChevronRight size={20} className="text-muted-foreground/40 group-hover:text-primary transition-colors" />
+              <ChevronRight size={18} className="text-muted-foreground/40 group-hover:text-primary transition-colors" />
             )}
           </div>
         )
@@ -141,7 +147,7 @@ export function CourseProgress({
         }
 
         return (
-          <Link key={lesson.id} href={`/courses/${slug}/${lesson.id}`}>
+          <Link key={lesson.id} href={`/courses/${slug}/${lesson.id}`} className="block">
             {content}
           </Link>
         )
