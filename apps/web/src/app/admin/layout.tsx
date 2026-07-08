@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { Settings, BookOpen, ArrowLeft } from "lucide-react"
+import { Settings, BookOpen, ArrowLeft, Tags } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Admin — Kakkoii",
@@ -20,6 +20,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin" className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted transition-colors">
             <BookOpen size={16} />
             Courses
+          </Link>
+          <Link href="/admin/tags" className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted transition-colors">
+            <Tags size={16} />
+            Tags
           </Link>
         </nav>
         <div className="border-t p-3">
