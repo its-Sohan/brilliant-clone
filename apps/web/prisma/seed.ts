@@ -228,9 +228,10 @@ async function main() {
       domain: "Math",
       difficulty: 2,
       lessons: [
-        { title: "What is Probability?", minutes: 8, blocks: [
+        { title: "What is Probability?", minutes: 12, blocks: [
           { type: BlockType.TEXT_EXPLANATION, content: { prompt: "**Probability** tells us how likely something is to happen. It's a number from 0 (impossible) to 1 (certain).\n\nA fair coin has a probability of 0.5 (or 50%) of landing on heads." } },
           { type: BlockType.MULTIPLE_CHOICE, content: { prompt: "What is the probability of a fair coin landing on heads?", options: ["0", "0.25", "0.5", "1"] }, solution: { correctIndex: 2 } },
+          { type: BlockType.SIMULATION, content: { prompt: "Flip a coin many times and watch the proportion of heads approach 50% — this is the **Law of Large Numbers** in action!\n\nTry flipping one at a time, or use 'Flip x40' to speed things up.", type: "coin_flip" } },
         ]},
         { title: "Calculating Chances", minutes: 10, blocks: [
           { type: BlockType.TEXT_EXPLANATION, content: { prompt: "To calculate probability: count the **favorable outcomes** and divide by the **total possible outcomes**.\n\n$$\\text{Probability} = \\frac{\\text{favorable}}{\\text{total}}$$\n\nIf you roll a 6-sided die, the chance of rolling a 4 is 1/6." } },
