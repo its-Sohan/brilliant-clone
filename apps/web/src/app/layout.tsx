@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "BrilliantClone",
-  description: "Learn interactively",
+  title: "Kakkoii — Learn by doing",
+  description: "Guided interactive problem solving that's effective and fun.",
 }
 
 export default function RootLayout({
