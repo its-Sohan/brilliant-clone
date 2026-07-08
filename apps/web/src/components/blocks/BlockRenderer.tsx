@@ -4,9 +4,10 @@ import { textExplanation } from "./TextExplanation"
 import { multipleChoice } from "./MultipleChoice"
 import { fillInBlank } from "./FillInBlank"
 import { dragAndDrop } from "./DragAndDrop"
+import { graphBuilder } from "./GraphBuilder"
 import type { BlockData, BlockResult } from "./types"
 
-const renderers = [textExplanation, multipleChoice, fillInBlank, dragAndDrop]
+const renderers = [textExplanation, multipleChoice, fillInBlank, dragAndDrop, graphBuilder]
 const rendererMap = Object.fromEntries(renderers.map((r) => [r.type, r.component]))
 
 export function BlockRenderer({ block, onComplete }: { block: BlockData; onComplete: (result: BlockResult) => void }) {

@@ -237,6 +237,10 @@ async function main() {
           { type: BlockType.MULTIPLE_CHOICE, content: { prompt: "What's the probability of rolling an even number on a 6-sided die?", options: ["1/6", "1/3", "1/2", "2/3"] }, solution: { correctIndex: 2 } },
           { type: BlockType.FILL_IN_BLANK, content: { prompt: "What's the probability of rolling a 1 on a 6-sided die? (Enter as a fraction like 1/2 or a decimal)", }, solution: { answer: "1/6", tolerance: 0 } },
         ]},
+        { title: "Graphing Probability", minutes: 12, blocks: [
+          { type: BlockType.TEXT_EXPLANATION, content: { prompt: "Probability distributions can be visualized as graphs. For a fair 6-sided die, each outcome (1-6) has equal probability of 1/6 ≈ 0.167.\n\nLet's plot this! Place points at y = 1/6 for each x from 1 to 6." } },
+          { type: BlockType.GRAPH_BUILDER, content: { prompt: "Plot the probability distribution for a fair 6-sided die. Each outcome (1–6) has probability **1/6** ≈ 0.167.", target: "y = 1/6 ≈ 0.167", domain: [0, 7], range: [0, 1] }, solution: { points: [[1, 0.167], [2, 0.167], [3, 0.167], [4, 0.167], [5, 0.167], [6, 0.167]], tolerance: 0.05 } },
+        ]},
       ],
     },
   ]
