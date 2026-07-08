@@ -4,12 +4,36 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useSession } from "next-auth/react"
 
 const STORAGE_KEY = "kakkoii_progress"
+const STREAK_KEY = "kakkoii_streak"
 
 interface StoredProgress {
   [lessonId: string]: {
     completedAt: string
     timeSpent: number
   }
+}
+
+function updateStreak() {
+  try {
+    const raw = localStorage.getItem(STREAK_KEY)
+    const today = new Date().toISOString().split("T")[0]
+    let count = 1
+
+    if (raw) {
+      const prev = JSON.parse(raw)
+      const prevDate = new Date(prev.date)
+      const diff = Math.round((Date.now() - prevDate.getTime()) / 86400000)
+
+      if (diff === 0) {
+        count = prev.count // same day, no change
+      } else if (diff === 1) {
+        count = prev.count + 1 // consecutive
+      }
+      // else reset to 1
+    }
+
+    localStorage.setItem(STREAK_KEY, JSON.stringify({ count, date: today }))
+  } catch {}
 }
 
 export function useLessonProgress(lessonId: string) {
@@ -62,6 +86,7 @@ export function useLessonProgress(lessonId: string) {
       // ignore
     }
 
+    updateStreak()
     setCompleted(true)
   }, [lessonId, session?.user])
 

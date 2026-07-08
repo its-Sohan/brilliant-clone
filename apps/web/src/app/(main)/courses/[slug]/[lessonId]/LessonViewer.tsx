@@ -16,10 +16,11 @@ interface LessonViewerProps {
   }
   courseTitle: string
   courseSlug: string
+  nextLessonId: string | null
   initialBlockIndex: number
 }
 
-export function LessonViewer({ lesson, courseTitle, courseSlug, initialBlockIndex }: LessonViewerProps) {
+export function LessonViewer({ lesson, courseTitle, courseSlug, nextLessonId, initialBlockIndex }: LessonViewerProps) {
   const { data: session } = useSession()
   const { completed, markComplete } = useLessonProgress(lesson.id)
   const [currentIndex, setCurrentIndex] = useState(initialBlockIndex)
@@ -166,12 +167,22 @@ export function LessonViewer({ lesson, courseTitle, courseSlug, initialBlockInde
               </div>
               <h2 className="text-xl font-semibold">Lesson complete!</h2>
               <p className="text-sm text-muted-foreground">Great work finishing this lesson.</p>
-              <Link
-                href={`/courses/${courseSlug}`}
-                className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
-              >
-                Back to course
-              </Link>
+              <div className="flex items-center justify-center gap-3">
+                {nextLessonId && (
+                  <Link
+                    href={`/courses/${courseSlug}/${nextLessonId}`}
+                    className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90 transition-colors"
+                  >
+                    Next lesson
+                  </Link>
+                )}
+                <Link
+                  href={`/courses/${courseSlug}`}
+                  className="inline-flex items-center justify-center rounded-lg border px-6 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
+                >
+                  Back to course
+                </Link>
+              </div>
             </div>
           ) : currentBlock ? (
             <div className="w-full max-w-2xl">
