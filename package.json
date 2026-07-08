@@ -11,13 +11,6 @@
     "db:seed": "pnpm --filter web tsx prisma/seed.ts",
     "start": "pnpm --filter web start"
   },
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "^11.10.0",
-      "onFail": "download"
-    }
-  },
   "devDependencies": {
     "tsx": "^4.23.0"
   }
