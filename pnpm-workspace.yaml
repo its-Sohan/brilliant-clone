@@ -10,4 +10,4 @@ allowBuilds:
   prisma: false
   sharp: false
   unrs-resolver: false
-onlyBuiltDependencies: '["@prisma/client","@prisma/engines","prisma","sharp","unrs-resolver","esbuild"]'
+onlyBuiltDependencies: '["@prisma/client","@prisma/engines","prisma","sharp","unrs-resolver","esbuild","@parcel/watcher","@swc/core"]'

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm --filter web dev",
+    "dev": "cd apps/web && npx next dev",
+    "dev:pnpm": "pnpm --filter web dev",
     "build": "pnpm --filter web build",
     "db:generate": "pnpm --filter web prisma generate",
     "db:push": "pnpm --filter web prisma db push",
