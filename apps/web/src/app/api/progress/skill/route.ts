@@ -43,6 +43,13 @@ export async function POST(request: Request) {
       },
     })
 
+    // Auto-create spaced repetition entry if it doesn't exist
+    await prisma.spacedRepetition.upsert({
+      where: { userId_conceptTag: { userId: session.user.id, conceptTag: tag } },
+      update: {},
+      create: { userId: session.user.id, conceptTag: tag },
+    })
+
     results.push({ conceptTag: tag, pKnown: updated.pKnown, mastered: isMastered(updated.pKnown) })
   }
 
