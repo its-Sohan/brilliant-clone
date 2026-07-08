@@ -1,29 +1,62 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
+const features = [
+  {
+    title: "Hands-on lessons",
+    desc: "Every concept has an interactive exercise. You learn by solving, not just reading.",
+  },
+  {
+    title: "Instant feedback",
+    desc: "Know immediately if you're right or wrong, with step-by-step explanations.",
+  },
+  {
+    title: "Adaptive difficulty",
+    desc: "Questions adjust to your skill level so you're always challenged, never overwhelmed.",
+  },
+  {
+    title: "Built for all levels",
+    desc: "From absolute beginner to advanced — meet yourself where you are.",
+  },
+  {
+    title: "Track progress",
+    desc: "See your improvement over time with clear metrics and milestones.",
+  },
+  {
+    title: "Always free to start",
+    desc: "No credit card required. Jump into any course and begin learning today.",
+  },
+]
+
 export default function Home() {
   return (
     <div className="flex flex-1 flex-col">
       {/* Hero */}
-      <section className="flex flex-1 flex-col items-center justify-center px-4 pt-16 pb-20 text-center">
-        <div className="mx-auto max-w-3xl">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+      <section className="relative flex flex-1 flex-col items-center justify-center px-4 pt-20 pb-24 text-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
+        <div className="mx-auto max-w-3xl relative">
+          <div className="inline-flex items-center rounded-full border bg-muted/50 px-3 py-1 text-xs font-medium text-muted-foreground mb-6">
+            Now in beta &middot; Start learning free
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl leading-tight">
             Learn interactively.
             <br />
-            <span className="text-primary">Think better.</span>
+            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              Think better.
+            </span>
           </h1>
-          <p className="mt-6 text-lg text-muted-foreground sm:text-xl max-w-xl mx-auto">
+          <p className="mt-6 text-lg text-muted-foreground sm:text-xl max-w-xl mx-auto leading-relaxed">
             Master math, programming, and science through hands-on lessons and
             real-time feedback. Built for how you actually learn.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/signup">
-              <Button size="lg" className="w-full sm:w-auto px-8 text-base">
+              <Button size="lg" className="w-full sm:w-auto px-8 text-base h-12 shadow-sm">
                 Get started free
               </Button>
             </Link>
             <Link href="/courses">
-              <Button variant="outline" size="lg" className="w-full sm:w-auto px-8 text-base">
+              <Button variant="outline" size="lg" className="w-full sm:w-auto px-8 text-base h-12">
                 Browse courses
               </Button>
             </Link>
@@ -32,21 +65,19 @@ export default function Home() {
       </section>
 
       {/* Stats */}
-      <section className="border-t bg-muted/30">
-        <div className="mx-auto max-w-5xl px-4 py-16">
+      <section className="border-y bg-muted/20">
+        <div className="mx-auto max-w-5xl px-4 py-14">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 text-center">
-            <div>
-              <p className="text-3xl font-bold">100+</p>
-              <p className="mt-1 text-sm text-muted-foreground">Interactive courses</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold">50,000+</p>
-              <p className="mt-1 text-sm text-muted-foreground">Active learners</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold">10 min</p>
-              <p className="mt-1 text-sm text-muted-foreground">Average daily session</p>
-            </div>
+            {[
+              { value: "100+", label: "Interactive courses" },
+              { value: "50,000+", label: "Active learners" },
+              { value: "10 min", label: "Average daily session" },
+            ].map((s) => (
+              <div key={s.label}>
+                <p className="text-3xl font-bold tracking-tight">{s.value}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{s.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -61,43 +92,22 @@ export default function Home() {
             We believe the best way to learn is by doing — not watching.
           </p>
         </div>
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {[
-            {
-              title: "Hands-on lessons",
-              desc: "Every concept has an interactive exercise. You learn by solving, not just reading.",
-            },
-            {
-              title: "Instant feedback",
-              desc: "Know immediately if you're right or wrong, with step-by-step explanations.",
-            },
-            {
-              title: "Adaptive difficulty",
-              desc: "Questions adjust to your skill level so you're always challenged, never overwhelmed.",
-            },
-            {
-              title: "Built for all levels",
-              desc: "From absolute beginner to advanced — meet yourself where you are.",
-            },
-            {
-              title: "Track progress",
-              desc: "See your improvement over time with clear metrics and milestones.",
-            },
-            {
-              title: "Always free to start",
-              desc: "No credit card required. Jump into any course and begin learning today.",
-            },
-          ].map((f) => (
-            <div key={f.title} className="rounded-xl border p-6 text-left">
-              <h3 className="font-semibold text-lg">{f.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{f.desc}</p>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map((f) => (
+            <div
+              key={f.title}
+              className="group rounded-xl border bg-card p-6 text-left transition-all hover:shadow-md hover:-translate-y-0.5"
+            >
+              <div className="h-1.5 w-10 rounded-full bg-primary/30 group-hover:bg-primary transition-colors" />
+              <h3 className="mt-4 font-semibold text-lg">{f.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* CTA */}
-      <section className="border-t bg-primary text-primary-foreground">
+      <section className="border-t bg-gradient-to-b from-primary to-primary/90 text-primary-foreground">
         <div className="mx-auto max-w-3xl px-4 py-20 text-center">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Ready to start learning?
@@ -107,7 +117,7 @@ export default function Home() {
           </p>
           <div className="mt-8">
             <Link href="/signup">
-              <Button size="lg" variant="secondary" className="px-8 text-base">
+              <Button size="lg" variant="secondary" className="px-8 text-base h-12 shadow-sm">
                 Get started for free
               </Button>
             </Link>
@@ -116,8 +126,9 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-8 text-center text-sm text-muted-foreground">
-        <p>© {new Date().getFullYear()} Kakkoii. Learning by doing.</p>
+      <footer className="border-t py-10 text-center text-sm text-muted-foreground">
+        <p className="font-medium text-foreground/80">kakkoii</p>
+        <p className="mt-1">&copy; {new Date().getFullYear()} Kakkoii. Learning by doing.</p>
       </footer>
     </div>
   )
