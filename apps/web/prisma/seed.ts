@@ -33,6 +33,11 @@ const lessons = [
         solution: { correctIndex: 1 },
         hints: { items: ["When we reach 9, the next number uses a new digit.", "9 + 1 = ?"] },
       },
+      {
+        type: BlockType.FILL_IN_BLANK,
+        content: { prompt: "How many fingers are on **two** hands?" },
+        solution: { answer: 10, tolerance: 0 },
+      },
     ],
   },
   {
@@ -65,6 +70,11 @@ const lessons = [
         solution: { correctIndex: 2 },
         hints: { items: ["First add: 6 + 2 = ?", "Then subtract 3 from the result."] },
       },
+      {
+        type: BlockType.FILL_IN_BLANK,
+        content: { prompt: "What is **100 - 50**? Type the number." },
+        solution: { answer: 50, tolerance: 0 },
+      },
     ],
   },
   {
@@ -96,6 +106,11 @@ const lessons = [
         content: { prompt: "What is **4 × 0**?", options: ["0", "1", "4", "40"] },
         solution: { correctIndex: 0 },
         hints: { items: ["Any number times 0 equals...", "How many items are in zero groups of four?"] },
+      },
+      {
+        type: BlockType.FILL_IN_BLANK,
+        content: { prompt: "What is **6 × 7**? Type the number." },
+        solution: { answer: 42, tolerance: 0 },
       },
     ],
   },
