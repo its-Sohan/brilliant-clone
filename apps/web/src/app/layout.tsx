@@ -4,6 +4,7 @@ import "./globals.css"
 export const metadata: Metadata = {
   title: "Kakkoii — Learn by doing",
   description: "Guided interactive problem solving that's effective and fun.",
+  icons: { icon: "/favicon.svg" },
 }
 
 export default function RootLayout({
